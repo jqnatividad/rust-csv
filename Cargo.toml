@@ -11,7 +11,7 @@ keywords = ["csv", "comma", "parser", "delimited", "serde"]
 license = "Unlicense/MIT"
 categories = ["encoding", "parser-implementations"]
 exclude = ["/.travis.yml", "/appveyor.yml", "/ci/*", "/scripts/*"]
-edition = "2018"
+edition = "2021"
 
 [badges]
 travis-ci = { repository = "BurntSushi/rust-csv" }
@@ -24,17 +24,20 @@ members = ["csv-core", "csv-index"]
 bench = false
 
 [dependencies]
-bstr = { version = "0.2.1", features = ["serde1"] }
+bstr = { version = "0.2", features = ["serde1"] }
 csv-core = { path = "csv-core", version = "0.1.6" }
 itoa = "1"
 ryu = "1"
-serde = "1.0.55"
+serde = "1"
 
 [dev-dependencies]
 serde = { version = "1.0.55", features = ["derive"] }
 
 [profile.release]
 debug = true
+opt-level = 3
+codegen-units = 1
+lto = true
 
 [profile.bench]
 debug = true
