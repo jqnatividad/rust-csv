@@ -439,7 +439,7 @@ enum NfaState {
 }
 
 /// A list of NFA states that have an explicit representation in the DFA.
-const NFA_STATES: &'static [NfaState] = &[
+const NFA_STATES: &[NfaState] = &[
     NfaState::StartRecord,
     NfaState::StartField,
     NfaState::EndFieldDelim,
@@ -454,22 +454,18 @@ const NFA_STATES: &'static [NfaState] = &[
 
 impl NfaState {
     /// Returns true if this state indicates that a field has been parsed.
-    fn is_field_final(&self) -> bool {
-        match *self {
+    fn is_field_final(self) -> bool {
+        matches!(self,
             NfaState::End
             | NfaState::EndRecord
             | NfaState::CRLF
-            | NfaState::EndFieldDelim => true,
-            _ => false,
-        }
+            | NfaState::EndFieldDelim)
     }
 
     /// Returns true if this state indicates that a record has been parsed.
-    fn is_record_final(&self) -> bool {
-        match *self {
-            NfaState::End | NfaState::EndRecord | NfaState::CRLF => true,
-            _ => false,
-        }
+    fn is_record_final(self) -> bool {
+        matches!(self,
+            NfaState::End | NfaState::EndRecord | NfaState::CRLF)
     }
 }
 
@@ -610,11 +606,10 @@ impl Reader {
     /// this method will fail to strip off the BOM if only part of the BOM is
     /// buffered. Hopefully that won't happen very often.
     fn strip_utf8_bom<'a>(&self, input: &'a [u8]) -> (&'a [u8], usize) {
-        let (input, nin) = if {
-            !self.has_read
+        let (input, nin) = if !self.has_read
                 && input.len() >= 3
                 && &input[0..3] == b"\xef\xbb\xbf"
-        } {
+        {
             (&input[3..], 3)
         } else {
             (input, 0)
@@ -640,21 +635,19 @@ impl Reader {
             // We insert that here, but we must take care to handle the case
             // where `ends` doesn't have enough space. If it doesn't have
             // enough space, then we also can't transition to the next state.
-            return match res {
-                ReadRecordResult::Record => {
-                    if ends.is_empty() {
-                        return (ReadRecordResult::OutputEndsFull, 0, 0, 0);
-                    }
-                    self.dfa_state = s;
-                    ends[0] = self.output_pos;
-                    self.output_pos = 0;
-                    (res, 0, 0, 1)
-                }
-                _ => {
-                    self.dfa_state = s;
-                    (res, 0, 0, 0)
-                }
+            return if res == ReadRecordResult::Record {
+                 if ends.is_empty() {
+                     return (ReadRecordResult::OutputEndsFull, 0, 0, 0);
+                 }
+                 self.dfa_state = s;
+                 ends[0] = self.output_pos;
+                 self.output_pos = 0;
+                 (res, 0, 0, 1)
+            } else {
+                 self.dfa_state = s;
+                 (res, 0, 0, 0)
             };
+
         }
         if output.is_empty() {
             return (ReadRecordResult::OutputFull, 0, 0, 0);
@@ -860,20 +853,17 @@ impl Reader {
         if input.is_empty() {
             let s = self.transition_final_nfa(self.nfa_state);
             let res = ReadRecordResult::from_nfa(s, false, false, false);
-            return match res {
-                ReadRecordResult::Record => {
-                    if ends.is_empty() {
-                        return (ReadRecordResult::OutputEndsFull, 0, 0, 0);
-                    }
-                    self.nfa_state = s;
-                    ends[0] = self.output_pos;
-                    self.output_pos = 0;
-                    (res, 0, 0, 1)
+            return if res == ReadRecordResult::Record {
+                if ends.is_empty() {
+                    return (ReadRecordResult::OutputEndsFull, 0, 0, 0);
                 }
-                _ => {
-                    self.nfa_state = s;
-                    (res, 0, 0, 0)
-                }
+                self.nfa_state = s;
+                ends[0] = self.output_pos;
+                self.output_pos = 0;
+                (res, 0, 0, 1)
+            } else {
+                self.nfa_state = s;
+                (res, 0, 0, 0)
             };
         }
         if output.is_empty() {
@@ -966,7 +956,7 @@ impl Reader {
     /// been exhausted.
     #[inline(always)]
     fn transition_final_nfa(&self, state: NfaState) -> NfaState {
-        use self::NfaState::*;
+        use self::NfaState::{CRLF, End, EndFieldDelim, EndFieldTerm, EndRecord, InComment, InDoubleEscapedQuote, InEscapedQuote, InField, InQuotedField, InRecordTerm, StartField, StartRecord};
         match state {
             End | StartRecord | EndRecord | InComment | CRLF => End,
             StartField | EndFieldDelim | EndFieldTerm | InField
@@ -987,7 +977,7 @@ impl Reader {
         state: NfaState,
         c: u8,
     ) -> (NfaState, NfaInputAction) {
-        use self::NfaState::*;
+        use self::NfaState::{CRLF, End, EndFieldDelim, EndFieldTerm, EndRecord, InComment, InDoubleEscapedQuote, InEscapedQuote, InField, InQuotedField, InRecordTerm, StartField, StartRecord};
         match state {
             End => (End, NfaInputAction::Epsilon),
             StartRecord => {
@@ -1288,7 +1278,7 @@ impl DfaState {
         DfaState(0)
     }
 
-    fn is_start(&self) -> bool {
+    fn is_start(self) -> bool {
         self.0 == 0
     }
 }
