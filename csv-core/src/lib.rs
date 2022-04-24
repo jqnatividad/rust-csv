@@ -115,32 +115,26 @@ mod writer;
 /// Use this to specify the record terminator while parsing CSV. The default is
 /// CRLF, which treats `\r`, `\n` or `\r\n` as a single record terminator.
 #[derive(Clone, Copy, Debug)]
+#[non_exhaustive]
 pub enum Terminator {
     /// Parses `\r`, `\n` or `\r\n` as a single record terminator.
     CRLF,
     /// Parses the byte given as a record terminator.
     Any(u8),
-    /// Hints that destructuring should not be exhaustive.
-    ///
-    /// This enum may grow additional variants, so this makes sure clients
-    /// don't count on exhaustive matching. (Otherwise, adding a new variant
-    /// could break existing code.)
-    #[doc(hidden)]
-    __Nonexhaustive,
 }
 
 impl Terminator {
     /// Checks whether the terminator is set to CRLF.
-    fn is_crlf(&self) -> bool {
-        match *self {
+    fn is_crlf(self) -> bool {
+        match self {
             Terminator::CRLF => true,
             Terminator::Any(_) => false,
             _ => unreachable!(),
         }
     }
 
-    fn equals(&self, other: u8) -> bool {
-        match *self {
+    fn equals(self, other: u8) -> bool {
+        match self {
             Terminator::CRLF => other == b'\r' || other == b'\n',
             Terminator::Any(b) => other == b,
             _ => unreachable!(),
@@ -156,6 +150,7 @@ impl Default for Terminator {
 
 /// The quoting style to use when writing CSV data.
 #[derive(Clone, Copy, Debug)]
+#[non_exhaustive]
 pub enum QuoteStyle {
     /// This puts quotes around every field. Always.
     Always,
@@ -173,13 +168,6 @@ pub enum QuoteStyle {
     NonNumeric,
     /// This *never* writes quotes, even if it would produce invalid CSV data.
     Never,
-    /// Hints that destructuring should not be exhaustive.
-    ///
-    /// This enum may grow additional variants, so this makes sure clients
-    /// don't count on exhaustive matching. (Otherwise, adding a new variant
-    /// could break existing code.)
-    #[doc(hidden)]
-    __Nonexhaustive,
 }
 
 impl Default for QuoteStyle {
