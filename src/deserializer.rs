@@ -24,7 +24,7 @@ pub fn deserialize_string_record<'de, D: Deserialize<'de>>(
 ) -> Result<D, Error> {
     let mut deser = DeRecordWrap(DeStringRecord {
         it: record.iter().peekable(),
-        headers: headers.map(|r| r.iter()),
+        headers: headers.map(StringRecord::iter),
         field: 0,
     });
     D::deserialize(&mut deser).map_err(|err| {
@@ -41,7 +41,7 @@ pub fn deserialize_byte_record<'de, D: Deserialize<'de>>(
 ) -> Result<D, Error> {
     let mut deser = DeRecordWrap(DeByteRecord {
         it: record.iter().peekable(),
-        headers: headers.map(|r| r.iter()),
+        headers: headers.map(ByteRecord::iter),
         field: 0,
     });
     D::deserialize(&mut deser).map_err(|err| {
@@ -162,14 +162,14 @@ impl<'r> DeRecord<'r> for DeStringRecord<'r> {
 
     #[inline]
     fn next_header(&mut self) -> Result<Option<&'r str>, DeserializeError> {
-        Ok(self.headers.as_mut().and_then(|it| it.next()))
+        Ok(self.headers.as_mut().and_then(std::iter::Iterator::next))
     }
 
     #[inline]
     fn next_header_bytes(
         &mut self,
     ) -> Result<Option<&'r [u8]>, DeserializeError> {
-        Ok(self.next_header()?.map(|s| s.as_bytes()))
+        Ok(self.next_header()?.map(str::as_bytes))
     }
 
     #[inline]
@@ -188,7 +188,7 @@ impl<'r> DeRecord<'r> for DeStringRecord<'r> {
 
     #[inline]
     fn next_field_bytes(&mut self) -> Result<&'r [u8], DeserializeError> {
-        self.next_field().map(|s| s.as_bytes())
+        self.next_field().map(str::as_bytes)
     }
 
     #[inline]
@@ -260,7 +260,7 @@ impl<'r> DeRecord<'r> for DeByteRecord<'r> {
     fn next_header_bytes(
         &mut self,
     ) -> Result<Option<&'r [u8]>, DeserializeError> {
-        Ok(self.headers.as_mut().and_then(|it| it.next()))
+        Ok(self.headers.as_mut().and_then(std::iter::Iterator::next))
     }
 
     #[inline]
@@ -514,10 +514,10 @@ impl<'a, 'de: 'a, T: DeRecord<'de>> Deserializer<'de>
         self,
         visitor: V,
     ) -> Result<V::Value, Self::Error> {
-        if !self.has_headers() {
-            visitor.visit_seq(self)
-        } else {
+        if self.has_headers() {
             visitor.visit_map(self)
+        } else {
+            visitor.visit_seq(self)
         }
     }
 
@@ -708,7 +708,7 @@ impl fmt::Display for DeserializeError {
 
 impl fmt::Display for DeserializeErrorKind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use self::DeserializeErrorKind::*;
+        use self::DeserializeErrorKind::{InvalidUtf8, Message, ParseBool, ParseFloat, ParseInt, UnexpectedEndOfRow, Unsupported};
 
         match *self {
             Message(ref msg) => write!(f, "{}", msg),
@@ -739,7 +739,7 @@ impl DeserializeError {
 impl DeserializeErrorKind {
     #[allow(deprecated)]
     fn description(&self) -> &str {
-        use self::DeserializeErrorKind::*;
+        use self::DeserializeErrorKind::{InvalidUtf8, Message, ParseBool, ParseFloat, ParseInt, UnexpectedEndOfRow, Unsupported};
 
         match *self {
             Message(_) => "deserialization error",
