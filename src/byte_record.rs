@@ -384,11 +384,10 @@ impl ByteRecord {
                 {
                     if read_pos == write_pos {
                         break;
-                    } else {
-                        self.0.fields[write_pos] = self.0.fields[read_pos];
-                        write_pos += 1;
-                        found_only_whitespace = false;
                     }
+                    self.0.fields[write_pos] = self.0.fields[read_pos];
+                    write_pos += 1;
+                    found_only_whitespace = false;
                 }
 
                 read_pos += 1;
