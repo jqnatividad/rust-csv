@@ -1625,7 +1625,7 @@ impl<R: io::Read> Reader<R> {
         &mut self,
         record: &mut ByteRecord,
     ) -> Result<bool> {
-        use csv_core::ReadRecordResult::*;
+        use csv_core::ReadRecordResult::{End, InputEmpty, OutputEndsFull, OutputFull, Record};
 
         record.clear();
         record.set_position(Some(self.state.cur_pos.clone()));
