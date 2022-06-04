@@ -456,7 +456,7 @@ impl<'w, W: io::Write> SeHeader<'w, W> {
     }
 
     fn wrote_header(&self) -> bool {
-        use self::HeaderState::*;
+        use self::HeaderState::{EncounteredStructField, ErrorIfWrite, InStructField, Write};
         match self.state {
             Write | ErrorIfWrite(_) => false,
             EncounteredStructField | InStructField => true,
@@ -467,7 +467,7 @@ impl<'w, W: io::Write> SeHeader<'w, W> {
         &mut self,
         name: T,
     ) -> Result<(), Error> {
-        use self::HeaderState::*;
+        use self::HeaderState::{EncounteredStructField, ErrorIfWrite, InStructField, Write};
 
         match self.state {
             Write => {
