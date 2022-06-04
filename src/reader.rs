@@ -1921,10 +1921,10 @@ pub struct DeserializeRecordsIntoIter<R, D> {
 
 impl<R: io::Read, D: DeserializeOwned> DeserializeRecordsIntoIter<R, D> {
     fn new(mut rdr: Reader<R>) -> DeserializeRecordsIntoIter<R, D> {
-        let headers = if !rdr.state.has_headers {
-            None
-        } else {
+        let headers = if rdr.state.has_headers {
             rdr.headers().ok().map(Clone::clone)
+        } else {
+            None
         };
         DeserializeRecordsIntoIter {
             rdr,
