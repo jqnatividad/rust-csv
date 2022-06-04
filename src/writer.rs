@@ -895,7 +895,7 @@ impl<W: io::Write> Writer<W> {
         I: IntoIterator<Item = T>,
         T: AsRef<[u8]>,
     {
-        for field in record.into_iter() {
+        for field in record {
             self.write_field_impl(field)?;
         }
         self.write_terminator()
@@ -981,7 +981,7 @@ impl<W: io::Write> Writer<W> {
                 self.buf.written(1);
             } else {
                 self.buf.writable()[..field.len()].copy_from_slice(field);
-                self.buf.written(field.len());                
+                self.buf.written(field.len());
             }
         }
         self.state.fields_written = record.len() as u64;
