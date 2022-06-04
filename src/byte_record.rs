@@ -877,8 +877,7 @@ impl<'r> DoubleEndedIterator for ByteRecordIter<'r> {
             let start = self
                 .i_reverse
                 .checked_sub(1)
-                .map(|i| self.r.0.bounds.ends()[i])
-                .unwrap_or(0);
+                .map_or(0, |i| self.r.0.bounds.ends()[i]);
             let end = self.last_start;
             self.last_start = start;
             Some(&self.r.0.fields[start..end])
