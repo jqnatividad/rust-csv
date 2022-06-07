@@ -550,14 +550,14 @@ pub fn quote(
                 }
                 if double_quote {
                     let (res, o) = write_pessimistic(&[quote, quote], output);
-                    if let WriteResult::OutputFull = res {
+                    if res ==  WriteResult::OutputFull {
                         return (res, nin, nout);
                     }
                     nout += o;
                     output = &mut moving(output)[o..];
                 } else {
                     let (res, o) = write_pessimistic(&[escape, quote], output);
-                    if let WriteResult::OutputFull = res {
+                    if res == WriteResult::OutputFull {
                         return (res, nin, nout);
                     }
                     nout += o;
