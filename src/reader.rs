@@ -1891,17 +1891,16 @@ impl ReaderState {
         let i = self.cur_pos.record();
         self.cur_pos.set_record(i.checked_add(1).unwrap());
         if !self.flexible {
-            match self.first_field_count {
-                None => self.first_field_count = Some(record.len() as u64),
-                Some(expected) => {
-                    if record.len() as u64 != expected {
-                        return Err(Error::new(ErrorKind::UnequalLengths {
-                            pos: record.position().map(Clone::clone),
-                            expected_len: expected,
-                            len: record.len() as u64,
-                        }));
-                    }
+            if let Some(expected) = self.first_field_count {
+                if record.len() as u64 != expected {
+                    return Err(Error::new(ErrorKind::UnequalLengths {
+                        pos: record.position().map(Clone::clone),
+                        expected_len: expected,
+                        len: record.len() as u64,
+                    }));
                 }
+            } else {
+                self.first_field_count = Some(record.len() as u64)
             }
         }
         Ok(())
