@@ -125,6 +125,7 @@ pub enum Terminator {
 
 impl Terminator {
     /// Checks whether the terminator is set to CRLF.
+    #[inline]
     fn is_crlf(self) -> bool {
         match self {
             Terminator::CRLF => true,
@@ -133,6 +134,7 @@ impl Terminator {
         }
     }
 
+    #[inline]
     fn equals(self, other: u8) -> bool {
         match self {
             Terminator::CRLF => other == b'\r' || other == b'\n',

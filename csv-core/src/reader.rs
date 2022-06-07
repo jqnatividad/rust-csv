@@ -489,6 +489,7 @@ impl Reader {
     /// of `\n`.
     ///
     /// Line numbers starts at `1` and are reset when `reset` is called.
+    #[inline]
     pub fn line(&self) -> u64 {
         self.line
     }
@@ -497,6 +498,7 @@ impl Reader {
     ///
     /// This is useful after a call to `reset` where the caller knows the
     /// line number from some additional context.
+    #[inline]
     pub fn set_line(&mut self, line: u64) {
         self.line = line;
     }
@@ -1227,6 +1229,7 @@ impl DfaClasses {
         DfaClasses { classes: [0; CLASS_SIZE], next_class: 1 }
     }
 
+    #[inline]
     fn add(&mut self, b: u8) {
         if self.next_class > CLASS_SIZE {
             panic!("added too many classes")
@@ -1235,6 +1238,7 @@ impl DfaClasses {
         self.next_class += 1;
     }
 
+    #[inline]
     fn num_classes(&self) -> usize {
         self.next_class as usize
     }
@@ -1278,10 +1282,12 @@ impl DfaClasses {
 struct DfaState(u8);
 
 impl DfaState {
+    #[inline]
     fn start() -> DfaState {
         DfaState(0)
     }
 
+    #[inline]
     fn is_start(self) -> bool {
         self.0 == 0
     }
