@@ -390,15 +390,18 @@ impl Writer {
     #[inline]
     fn needs_quotes(&self, mut input: &[u8]) -> bool {
         let mut needs = false;
-        while !needs && input.len() >= 8 {
+        loop {
+            if needs || input.len() < 8 {
+                break;
+            }
             needs = self.requires_quotes[input[0] as usize]
-                || self.requires_quotes[input[1] as usize]
-                || self.requires_quotes[input[2] as usize]
-                || self.requires_quotes[input[3] as usize]
-                || self.requires_quotes[input[4] as usize]
-                || self.requires_quotes[input[5] as usize]
-                || self.requires_quotes[input[6] as usize]
-                || self.requires_quotes[input[7] as usize];
+                        || self.requires_quotes[input[1] as usize]
+                        || self.requires_quotes[input[2] as usize]
+                        || self.requires_quotes[input[3] as usize]
+                        || self.requires_quotes[input[4] as usize]
+                        || self.requires_quotes[input[5] as usize]
+                        || self.requires_quotes[input[6] as usize]
+                        || self.requires_quotes[input[7] as usize];
             input = &input[8..];
         }
         needs || input.iter().any(|&b| self.is_special_byte(b))
@@ -531,41 +534,38 @@ pub fn quote(
 ) -> (WriteResult, usize, usize) {
     let (mut nin, mut nout) = (0, 0);
     loop {
-        match memchr(quote, input) {
-            None => {
-                let (res, i, o) = write_optimistic(input, output);
-                nin += i;
-                nout += o;
+        if let Some(next_quote) = memchr(quote, input) {
+            let (res, i, o) =
+                write_optimistic(&input[..next_quote], output);
+            input = &input[i..];
+            output = &mut moving(output)[o..];
+            nin += i;
+            nout += o;
+            if let WriteResult::OutputFull = res {
                 return (res, nin, nout);
             }
-            Some(next_quote) => {
-                let (res, i, o) =
-                    write_optimistic(&input[..next_quote], output);
-                input = &input[i..];
-                output = &mut moving(output)[o..];
-                nin += i;
-                nout += o;
-                if let WriteResult::OutputFull = res {
+            if double_quote {
+                let (res, o) = write_pessimistic(&[quote, quote], output);
+                if res ==  WriteResult::OutputFull {
                     return (res, nin, nout);
                 }
-                if double_quote {
-                    let (res, o) = write_pessimistic(&[quote, quote], output);
-                    if res ==  WriteResult::OutputFull {
-                        return (res, nin, nout);
-                    }
-                    nout += o;
-                    output = &mut moving(output)[o..];
-                } else {
-                    let (res, o) = write_pessimistic(&[escape, quote], output);
-                    if res == WriteResult::OutputFull {
-                        return (res, nin, nout);
-                    }
-                    nout += o;
-                    output = &mut moving(output)[o..];
+                nout += o;
+                output = &mut moving(output)[o..];
+            } else {
+                let (res, o) = write_pessimistic(&[escape, quote], output);
+                if res == WriteResult::OutputFull {
+                    return (res, nin, nout);
                 }
-                nin += 1;
-                input = &input[1..];
+                nout += o;
+                output = &mut moving(output)[o..];
             }
+            nin += 1;
+            input = &input[1..];
+        } else {
+            let (res, i, o) = write_optimistic(input, output);
+            nin += i;
+            nout += o;
+            return (res, nin, nout);
         }
     }
 }
