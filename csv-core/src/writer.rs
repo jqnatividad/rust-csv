@@ -32,7 +32,7 @@ impl WriterBuilder {
 
     /// Builder a CSV writer from this configuration.
     pub fn build(&self) -> Writer {
-        use crate::Terminator::*;
+        use crate::Terminator::{Any, CRLF};
 
         let mut wtr = self.wtr.clone();
         wtr.requires_quotes[self.wtr.delimiter as usize] = true;
