@@ -38,7 +38,7 @@ impl Default for ReaderBuilder {
             flexible: false,
             has_headers: true,
             trim: Trim::default(),
-            builder: Box::new(CoreReaderBuilder::default()),
+            builder: Box::<csv_core::ReaderBuilder>::default(),
         }
     }
 }
