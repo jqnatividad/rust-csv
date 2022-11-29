@@ -491,10 +491,7 @@ impl Default for WriterState {
 
 /// Returns true if and only if the given input is non-numeric.
 pub fn is_non_numeric(input: &[u8]) -> bool {
-    let s = match str::from_utf8(input) {
-        Err(_) => return true,
-        Ok(s) => s,
-    };
+    let Ok(s) = str::from_utf8(input) else { return true };
     // I suppose this could be faster if we wrote validators of numbers instead
     // of using the actual parser, but that's probably a lot of work for a bit
     // of a niche feature.
