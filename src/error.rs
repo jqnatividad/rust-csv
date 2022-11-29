@@ -51,7 +51,7 @@ impl Error {
     ///
     /// This is a convenience function that permits callers to easily access
     /// the position on an error without doing case analysis on `ErrorKind`.
-    pub fn position(&self) -> Option<&Position> {
+    pub const fn position(&self) -> Option<&Position> {
         self.0.position()
     }
 }
