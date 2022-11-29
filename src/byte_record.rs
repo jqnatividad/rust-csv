@@ -707,10 +707,7 @@ impl Bounds {
         if i >= self.len {
             return None;
         }
-        let end = match self.ends.get(i) {
-            None => return None,
-            Some(&end) => end,
-        };
+        let Some(&end) = self.ends.get(i) else { return None };
         let start = match i.checked_sub(1).and_then(|i| self.ends.get(i)) {
             None => 0,
             Some(&start) => start,
