@@ -1,3 +1,20 @@
+#![cfg_attr(
+    feature = "cargo-clippy",
+    allow(
+        clippy::use_self,
+        clippy::cognitive_complexity,
+        clippy::upper_case_acronyms,
+        clippy::derivable_impls,
+        clippy::needless_doctest_main,
+        clippy::module_name_repetitions,
+        clippy::missing_errors_doc,
+        clippy::missing_panics_doc,
+        clippy::doc_markdown,
+        clippy::inline_always,
+        clippy::must_use_candidate,
+        clippy::uninlined_format_args,
+    )
+)]
 /*!
 The `csv` crate provides a fast and flexible CSV reader and writer, with
 support for Serde.
