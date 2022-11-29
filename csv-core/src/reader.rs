@@ -1124,7 +1124,7 @@ struct Dfa {
 }
 
 impl Dfa {
-    fn new() -> Dfa {
+    const fn new() -> Dfa {
         Dfa {
             trans: [DfaState(0); TRANS_SIZE],
             has_output: [false; TRANS_SIZE],
