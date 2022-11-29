@@ -192,7 +192,7 @@ impl StringRecord {
     #[inline]
     pub fn from_byte_record_lossy(record: ByteRecord) -> StringRecord {
         // If the record is valid UTF-8, then take the easy path.
-        if let Ok(()) = record.validate() {
+        if record.validate().is_ok() {
             return StringRecord(record);
         }
         // TODO: We can be faster here. Not sure if it's worth it.
