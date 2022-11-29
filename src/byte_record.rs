@@ -295,7 +295,7 @@ impl ByteRecord {
     /// assert_eq!(record.len(), 3);
     /// ```
     #[inline]
-    pub fn len(&self) -> usize {
+    pub const fn len(&self) -> usize {
         self.0.bounds.len()
     }
 
@@ -469,7 +469,7 @@ impl ByteRecord {
     /// }
     /// ```
     #[inline]
-    pub fn position(&self) -> Option<&Position> {
+    pub const fn position(&self) -> Option<&Position> {
         self.0.pos.as_ref()
     }
 
@@ -628,23 +628,23 @@ pub struct Position {
 impl Position {
     /// Returns a new position initialized to the start value.
     #[inline]
-    pub fn new() -> Position {
+    pub const fn new() -> Position {
         Position { byte: 0, line: 1, record: 0 }
     }
 
     /// The byte offset, starting at `0`, of this position.
     #[inline]
-    pub fn byte(&self) -> u64 {
+    pub const fn byte(&self) -> u64 {
         self.byte
     }
     /// The line number, starting at `1`, of this position.
     #[inline]
-    pub fn line(&self) -> u64 {
+    pub const fn line(&self) -> u64 {
         self.line
     }
     /// The record index, starting with the first record at `0`.
     #[inline]
-    pub fn record(&self) -> u64 {
+    pub const fn record(&self) -> u64 {
         self.record
     }
 
@@ -734,7 +734,7 @@ impl Bounds {
 
     /// Returns the number of fields in these bounds.
     #[inline]
-    fn len(&self) -> usize {
+    const fn len(&self) -> usize {
         self.len
     }
 

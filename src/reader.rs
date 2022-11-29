@@ -1718,7 +1718,7 @@ impl<R: io::Read> Reader<R> {
     ///     Ok(())
     /// }
     /// ```
-    pub fn position(&self) -> &Position {
+    pub const fn position(&self) -> &Position {
         &self.state.cur_pos
     }
 
@@ -1756,7 +1756,7 @@ impl<R: io::Read> Reader<R> {
 
     /// Returns true if and only if this reader has been configured to
     /// interpret the first record as a header record.
-    pub fn has_headers(&self) -> bool {
+    pub const fn has_headers(&self) -> bool {
         self.state.has_headers
     }
 
@@ -1934,7 +1934,7 @@ impl<R: io::Read, D: DeserializeOwned> DeserializeRecordsIntoIter<R, D> {
     }
 
     /// Return a reference to the underlying CSV reader.
-    pub fn reader(&self) -> &Reader<R> {
+    pub const fn reader(&self) -> &Reader<R> {
         &self.rdr
     }
 
@@ -2028,7 +2028,7 @@ impl<R: io::Read> StringRecordsIntoIter<R> {
     }
 
     /// Return a reference to the underlying CSV reader.
-    pub fn reader(&self) -> &Reader<R> {
+    pub const fn reader(&self) -> &Reader<R> {
         &self.rdr
     }
 
@@ -2104,7 +2104,7 @@ impl<R: io::Read> ByteRecordsIntoIter<R> {
     }
 
     /// Return a reference to the underlying CSV reader.
-    pub fn reader(&self) -> &Reader<R> {
+    pub const fn reader(&self) -> &Reader<R> {
         &self.rdr
     }
 

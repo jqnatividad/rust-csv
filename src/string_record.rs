@@ -349,7 +349,7 @@ impl StringRecord {
     /// assert!(StringRecord::new().is_empty());
     /// ```
     #[inline]
-    pub fn is_empty(&self) -> bool {
+    pub const fn is_empty(&self) -> bool {
         self.len() == 0
     }
 
@@ -364,7 +364,7 @@ impl StringRecord {
     /// assert_eq!(record.len(), 3);
     /// ```
     #[inline]
-    pub fn len(&self) -> usize {
+    pub const fn len(&self) -> usize {
         self.0.len()
     }
 
@@ -493,7 +493,7 @@ impl StringRecord {
     /// }
     /// ```
     #[inline]
-    pub fn position(&self) -> Option<&Position> {
+    pub const fn position(&self) -> Option<&Position> {
         self.0.position()
     }
 
@@ -574,7 +574,7 @@ impl StringRecord {
     /// assert_eq!(&byte_record[2], b"c");
     /// ```
     #[inline]
-    pub fn as_byte_record(&self) -> &ByteRecord {
+    pub const fn as_byte_record(&self) -> &ByteRecord {
         &self.0
     }
 
