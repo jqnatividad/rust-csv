@@ -114,7 +114,7 @@ impl<W: io::Write> RandomAccessSimple<W> {
             len += 1;
         }
         wtr.write_u64::<BigEndian>(len)?;
-        Ok(())
+        Ok(wtr.flush()?)
     }
 }
 
