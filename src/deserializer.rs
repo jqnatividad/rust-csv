@@ -448,7 +448,7 @@ impl<'a, 'de: 'a, T: DeRecord<'de>> Deserializer<'de>
     ) -> Result<V::Value, Self::Error> {
         match self.peek_field() {
             None => visitor.visit_none(),
-            Some(f) if f.is_empty() => {
+            Some([]) => {
                 self.next_field().expect("empty field");
                 visitor.visit_none()
             }
