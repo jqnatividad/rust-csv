@@ -364,17 +364,15 @@ impl SerdeError for Error {
 
 fn error_scalar_outside_struct<T: fmt::Display>(name: T) -> Error {
     Error::custom(format!(
-        "cannot serialize {} scalar outside struct \
-         when writing headers from structs",
-        name
+        "cannot serialize {name} scalar outside struct \
+         when writing headers from structs"
     ))
 }
 
 fn error_container_inside_struct<T: fmt::Display>(name: T) -> Error {
     Error::custom(format!(
-        "cannot serialize {} container inside struct \
-         when writing headers from structs",
-        name
+        "cannot serialize {name} container inside struct \
+         when writing headers from structs"
     ))
 }
 
@@ -391,7 +389,7 @@ pub fn serialize_header<S: Serialize, W: io::Write>(
     value: S,
 ) -> Result<bool, Error> {
     let mut ser = SeHeader::new(wtr);
-    value.serialize(&mut ser).map(|_| ser.wrote_header())
+    value.serialize(&mut ser).map(|()| ser.wrote_header())
 }
 
 /// State machine for `SeHeader`.
@@ -459,7 +457,7 @@ impl<'w, W: io::Write> SeHeader<'w, W> {
     }
 
     fn wrote_header(&self) -> bool {
-        use self::HeaderState::*;
+        use self::HeaderState::{EncounteredStructField, ErrorIfWrite, InStructField, Write};
         match self.state {
             Write | ErrorIfWrite(_) => false,
             EncounteredStructField | InStructField => true,
@@ -470,7 +468,7 @@ impl<'w, W: io::Write> SeHeader<'w, W> {
         &mut self,
         name: T,
     ) -> Result<(), Error> {
-        use self::HeaderState::*;
+        use self::HeaderState::{EncounteredStructField, ErrorIfWrite, InStructField, Write};
 
         match self.state {
             Write => {
@@ -601,7 +599,7 @@ impl<'a, 'w, W: io::Write> Serializer for &'a mut SeHeader<'w, W> {
         _variant_index: u32,
         variant: &'static str,
     ) -> Result<Self::Ok, Self::Error> {
-        self.handle_scalar(format!("{}::{}", name, variant))
+        self.handle_scalar(format!("{name}::{variant}"))
     }
 
     fn serialize_newtype_struct<T: ?Sized + Serialize>(
@@ -609,7 +607,7 @@ impl<'a, 'w, W: io::Write> Serializer for &'a mut SeHeader<'w, W> {
         name: &'static str,
         _value: &T,
     ) -> Result<Self::Ok, Self::Error> {
-        self.handle_scalar(format!("{}(_)", name))
+        self.handle_scalar(format!("{name}(_)"))
     }
 
     fn serialize_newtype_variant<T: ?Sized + Serialize>(
@@ -619,7 +617,7 @@ impl<'a, 'w, W: io::Write> Serializer for &'a mut SeHeader<'w, W> {
         variant: &'static str,
         _value: &T,
     ) -> Result<Self::Ok, Self::Error> {
-        self.handle_scalar(format!("{}::{}(_)", name, variant))
+        self.handle_scalar(format!("{name}::{variant}(_)"))
     }
 
     fn serialize_seq(

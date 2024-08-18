@@ -26,12 +26,12 @@ impl Error {
     }
 
     /// Return the specific type of this error.
-    pub fn kind(&self) -> &ErrorKind {
+    #[must_use] pub fn kind(&self) -> &ErrorKind {
         &self.0
     }
 
     /// Unwrap this error into its underlying type.
-    pub fn into_kind(self) -> ErrorKind {
+    #[must_use] pub fn into_kind(self) -> ErrorKind {
         *self.0
     }
 
@@ -39,7 +39,7 @@ impl Error {
     ///
     /// If this is true, the underlying `ErrorKind` is guaranteed to be
     /// `ErrorKind::Io`.
-    pub fn is_io_error(&self) -> bool {
+    #[must_use] pub fn is_io_error(&self) -> bool {
         match *self.0 {
             ErrorKind::Io(_) => true,
             _ => false,
@@ -50,7 +50,7 @@ impl Error {
     ///
     /// This is a convenience function that permits callers to easily access
     /// the position on an error without doing case analysis on `ErrorKind`.
-    pub fn position(&self) -> Option<&Position> {
+    #[must_use] pub fn position(&self) -> Option<&Position> {
         self.0.position()
     }
 }
@@ -111,7 +111,7 @@ impl ErrorKind {
     ///
     /// This is a convenience function that permits callers to easily access
     /// the position on an error without doing case analysis on `ErrorKind`.
-    pub fn position(&self) -> Option<&Position> {
+    #[must_use] pub fn position(&self) -> Option<&Position> {
         match *self {
             ErrorKind::Utf8 { ref pos, .. } => pos.as_ref(),
             ErrorKind::UnequalLengths { ref pos, .. } => pos.as_ref(),
@@ -156,9 +156,8 @@ impl fmt::Display for Error {
                 write!(
                     f,
                     "CSV error: \
-                     found record with {} fields, but the previous record \
-                     has {} fields",
-                    len, expected_len
+                     found record with {len} fields, but the previous record \
+                     has {expected_len} fields"
                 )
             }
             ErrorKind::UnequalLengths {
@@ -183,10 +182,10 @@ impl fmt::Display for Error {
                  could be read"
             ),
             ErrorKind::Serialize(ref err) => {
-                write!(f, "CSV write error: {}", err)
+                write!(f, "CSV write error: {err}")
             }
             ErrorKind::Deserialize { pos: None, ref err } => {
-                write!(f, "CSV deserialize error: {}", err)
+                write!(f, "CSV deserialize error: {err}")
             }
             ErrorKind::Deserialize { pos: Some(ref pos), ref err } => write!(
                 f,
@@ -213,18 +212,18 @@ pub struct FromUtf8Error {
 }
 
 impl FromUtf8Error {
-    /// Create a new FromUtf8Error.
+    /// Create a new `FromUtf8Error`.
     pub(crate) fn new(record: ByteRecord, err: Utf8Error) -> FromUtf8Error {
         FromUtf8Error { record, err }
     }
 
     /// Access the underlying `ByteRecord` that failed UTF-8 validation.
-    pub fn into_byte_record(self) -> ByteRecord {
+    #[must_use] pub fn into_byte_record(self) -> ByteRecord {
         self.record
     }
 
     /// Access the underlying UTF-8 validation error.
-    pub fn utf8_error(&self) -> &Utf8Error {
+    #[must_use] pub fn utf8_error(&self) -> &Utf8Error {
         &self.err
     }
 }
@@ -263,11 +262,11 @@ pub fn new_utf8_error(field: usize, valid_up_to: usize) -> Utf8Error {
 
 impl Utf8Error {
     /// The field index of a byte record in which UTF-8 validation failed.
-    pub fn field(&self) -> usize {
+    #[must_use] pub fn field(&self) -> usize {
         self.field
     }
     /// The index into the given field up to which valid UTF-8 was verified.
-    pub fn valid_up_to(&self) -> usize {
+    #[must_use] pub fn valid_up_to(&self) -> usize {
         self.valid_up_to
     }
 }

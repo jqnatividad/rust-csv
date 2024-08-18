@@ -31,7 +31,7 @@ pub struct ReaderBuilder {
     trim: Trim,
     /// The underlying CSV parser builder.
     ///
-    /// We explicitly put this on the heap because CoreReaderBuilder embeds an
+    /// We explicitly put this on the heap because `CoreReaderBuilder` embeds an
     /// entire DFA transition table, which along with other things, tallies up
     /// to almost 500 bytes on the stack.
     builder: Box<CoreReaderBuilder>,
@@ -80,7 +80,7 @@ impl ReaderBuilder {
     ///     Ok(())
     /// }
     /// ```
-    pub fn new() -> ReaderBuilder {
+    #[must_use] pub fn new() -> ReaderBuilder {
         ReaderBuilder::default()
     }
 
@@ -713,7 +713,7 @@ impl ReaderBuilder {
 pub struct Reader<R> {
     /// The underlying CSV parser.
     ///
-    /// We explicitly put this on the heap because CoreReader embeds an entire
+    /// We explicitly put this on the heap because `CoreReader` embeds an entire
     /// DFA transition table, which along with other things, tallies up to
     /// almost 500 bytes on the stack.
     core: Box<CoreReader>,
@@ -1619,7 +1619,7 @@ impl<R: io::Read> Reader<R> {
         &mut self,
         record: &mut ByteRecord,
     ) -> Result<bool> {
-        use csv_core::ReadRecordResult::*;
+        use csv_core::ReadRecordResult::{End, InputEmpty, OutputEndsFull, OutputFull, Record};
 
         record.clear();
         record.set_position(Some(self.state.cur_pos.clone()));
@@ -1984,7 +1984,7 @@ impl<'r, R: io::Read, D: DeserializeOwned> DeserializeRecordsIter<'r, R, D> {
     }
 
     /// Return a reference to the underlying CSV reader.
-    pub fn reader(&self) -> &Reader<R> {
+    #[must_use] pub fn reader(&self) -> &Reader<R> {
         self.rdr
     }
 
@@ -2062,7 +2062,7 @@ impl<'r, R: io::Read> StringRecordsIter<'r, R> {
     }
 
     /// Return a reference to the underlying CSV reader.
-    pub fn reader(&self) -> &Reader<R> {
+    #[must_use] pub fn reader(&self) -> &Reader<R> {
         self.rdr
     }
 
@@ -2138,7 +2138,7 @@ impl<'r, R: io::Read> ByteRecordsIter<'r, R> {
     }
 
     /// Return a reference to the underlying CSV reader.
-    pub fn reader(&self) -> &Reader<R> {
+    #[must_use] pub fn reader(&self) -> &Reader<R> {
         self.rdr
     }
 

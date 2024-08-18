@@ -230,7 +230,7 @@ pub enum Terminator {
 }
 
 impl Terminator {
-    /// Convert this to the csv_core type of the same name.
+    /// Convert this to the `csv_core` type of the same name.
     fn to_core(self) -> csv_core::Terminator {
         match self {
             Terminator::CRLF => csv_core::Terminator::CRLF,

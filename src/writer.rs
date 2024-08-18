@@ -62,7 +62,7 @@ impl WriterBuilder {
     ///     Ok(())
     /// }
     /// ```
-    pub fn new() -> WriterBuilder {
+    #[must_use] pub fn new() -> WriterBuilder {
         WriterBuilder::default()
     }
 
@@ -559,7 +559,7 @@ struct WriterState {
     panicked: bool,
 }
 
-/// HeaderState encodes a small state machine for handling header writes.
+/// `HeaderState` encodes a small state machine for handling header writes.
 #[derive(Debug)]
 enum HeaderState {
     /// Indicates that we should attempt to write a header.
@@ -920,7 +920,7 @@ impl<W: io::Write> Writer<W> {
         I: IntoIterator<Item = T>,
         T: AsRef<[u8]>,
     {
-        for field in record.into_iter() {
+        for field in record {
             self.write_field_impl(field)?;
         }
         self.write_terminator()
@@ -982,7 +982,7 @@ impl<W: io::Write> Writer<W> {
             return self.write_record(record);
         }
         let mut first = true;
-        for field in record.iter() {
+        for field in record {
             if !first {
                 self.buf.writable()[0] = self.core.get_delimiter();
                 self.buf.written(1);
@@ -1049,10 +1049,10 @@ impl<W: io::Write> Writer<W> {
         self.write_field_impl(field)
     }
 
-    /// Implementation of write_field.
+    /// Implementation of `write_field`.
     ///
     /// This is a separate method so we can force the compiler to inline it
-    /// into write_record.
+    /// into `write_record`.
     #[inline(always)]
     fn write_field_impl<T: AsRef<[u8]>>(&mut self, field: T) -> Result<()> {
         if self.state.fields_written > 0 {

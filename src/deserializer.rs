@@ -53,7 +53,7 @@ pub fn deserialize_byte_record<'de, D: Deserialize<'de>>(
 }
 
 /// An over-engineered internal trait that permits writing a single Serde
-/// deserializer that works on both ByteRecord and StringRecord.
+/// deserializer that works on both `ByteRecord` and `StringRecord`.
 ///
 /// We *could* implement a single deserializer on `ByteRecord` and simply
 /// convert `StringRecord`s to `ByteRecord`s, but then the implementation
@@ -162,14 +162,14 @@ impl<'r> DeRecord<'r> for DeStringRecord<'r> {
 
     #[inline]
     fn next_header(&mut self) -> Result<Option<&'r str>, DeserializeError> {
-        Ok(self.headers.as_mut().and_then(|it| it.next()))
+        Ok(self.headers.as_mut().and_then(std::iter::Iterator::next))
     }
 
     #[inline]
     fn next_header_bytes(
         &mut self,
     ) -> Result<Option<&'r [u8]>, DeserializeError> {
-        Ok(self.next_header()?.map(|s| s.as_bytes()))
+        Ok(self.next_header()?.map(str::as_bytes))
     }
 
     #[inline]
@@ -188,7 +188,7 @@ impl<'r> DeRecord<'r> for DeStringRecord<'r> {
 
     #[inline]
     fn next_field_bytes(&mut self) -> Result<&'r [u8], DeserializeError> {
-        self.next_field().map(|s| s.as_bytes())
+        self.next_field().map(str::as_bytes)
     }
 
     #[inline]
@@ -257,7 +257,7 @@ impl<'r> DeRecord<'r> for DeByteRecord<'r> {
     fn next_header_bytes(
         &mut self,
     ) -> Result<Option<&'r [u8]>, DeserializeError> {
-        Ok(self.headers.as_mut().and_then(|it| it.next()))
+        Ok(self.headers.as_mut().and_then(std::iter::Iterator::next))
     }
 
     #[inline]
@@ -407,8 +407,7 @@ impl<'a, 'de: 'a, T: DeRecord<'de>> Deserializer<'de>
         let len = field.chars().count();
         if len != 1 {
             return Err(self.error(DEK::Message(format!(
-                "expected single character but got {} characters in '{}'",
-                len, field
+                "expected single character but got {len} characters in '{field}'"
             ))));
         }
         visitor.visit_char(field.chars().next().unwrap())
@@ -702,12 +701,12 @@ impl fmt::Display for DeserializeError {
 
 impl fmt::Display for DeserializeErrorKind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use self::DeserializeErrorKind::*;
+        use self::DeserializeErrorKind::{InvalidUtf8, Message, ParseBool, ParseFloat, ParseInt, UnexpectedEndOfRow, Unsupported};
 
         match *self {
-            Message(ref msg) => write!(f, "{}", msg),
+            Message(ref msg) => write!(f, "{msg}"),
             Unsupported(ref which) => {
-                write!(f, "unsupported deserializer method: {}", which)
+                write!(f, "unsupported deserializer method: {which}")
             }
             UnexpectedEndOfRow => write!(f, "{}", self.description()),
             InvalidUtf8(ref err) => err.fmt(f),
@@ -720,12 +719,12 @@ impl fmt::Display for DeserializeErrorKind {
 
 impl DeserializeError {
     /// Return the field index (starting at 0) of this error, if available.
-    pub fn field(&self) -> Option<u64> {
+    #[must_use] pub fn field(&self) -> Option<u64> {
         self.field
     }
 
     /// Return the underlying error kind.
-    pub fn kind(&self) -> &DeserializeErrorKind {
+    #[must_use] pub fn kind(&self) -> &DeserializeErrorKind {
         &self.kind
     }
 }
@@ -733,7 +732,7 @@ impl DeserializeError {
 impl DeserializeErrorKind {
     #[allow(deprecated)]
     fn description(&self) -> &str {
-        use self::DeserializeErrorKind::*;
+        use self::DeserializeErrorKind::{InvalidUtf8, Message, ParseBool, ParseFloat, ParseInt, UnexpectedEndOfRow, Unsupported};
 
         match *self {
             Message(_) => "deserialization error",

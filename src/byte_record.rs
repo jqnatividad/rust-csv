@@ -126,7 +126,7 @@ impl ByteRecord {
     /// assert_eq!(record.len(), 3);
     /// ```
     #[inline]
-    pub fn new() -> ByteRecord {
+    #[must_use] pub fn new() -> ByteRecord {
         ByteRecord::with_capacity(0, 0)
     }
 
@@ -136,7 +136,7 @@ impl ByteRecord {
     /// actual row contents. `fields` refers to the number of fields one
     /// might expect to store.
     #[inline]
-    pub fn with_capacity(buffer: usize, fields: usize) -> ByteRecord {
+    #[must_use] pub fn with_capacity(buffer: usize, fields: usize) -> ByteRecord {
         ByteRecord(Box::new(ByteRecordInner {
             pos: None,
             fields: vec![0; buffer],
@@ -251,7 +251,7 @@ impl ByteRecord {
     /// }
     /// ```
     #[inline]
-    pub fn iter(&self) -> ByteRecordIter {
+    #[must_use] pub fn iter(&self) -> ByteRecordIter {
         self.into_iter()
     }
 
@@ -269,7 +269,7 @@ impl ByteRecord {
     /// assert_eq!(record.get(3), None);
     /// ```
     #[inline]
-    pub fn get(&self, i: usize) -> Option<&[u8]> {
+    #[must_use] pub fn get(&self, i: usize) -> Option<&[u8]> {
         self.0.bounds.get(i).map(|range| &self.0.fields[range])
     }
 
@@ -283,7 +283,7 @@ impl ByteRecord {
     /// assert!(ByteRecord::new().is_empty());
     /// ```
     #[inline]
-    pub fn is_empty(&self) -> bool {
+    #[must_use] pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
 
@@ -298,7 +298,7 @@ impl ByteRecord {
     /// assert_eq!(record.len(), 3);
     /// ```
     #[inline]
-    pub fn len(&self) -> usize {
+    #[must_use] pub fn len(&self) -> usize {
         self.0.bounds.len()
     }
 
@@ -438,7 +438,7 @@ impl ByteRecord {
     /// }
     /// ```
     #[inline]
-    pub fn position(&self) -> Option<&Position> {
+    #[must_use] pub fn position(&self) -> Option<&Position> {
         self.0.pos.as_ref()
     }
 
@@ -479,7 +479,7 @@ impl ByteRecord {
     /// assert_eq!(&record.as_slice()[range], &b"quux"[..]);
     /// ```
     #[inline]
-    pub fn range(&self, i: usize) -> Option<Range<usize>> {
+    #[must_use] pub fn range(&self, i: usize) -> Option<Range<usize>> {
         self.0.bounds.get(i)
     }
 
@@ -496,7 +496,7 @@ impl ByteRecord {
     /// assert_eq!(record.as_slice(), &b"fooquuxz"[..]);
     /// ```
     #[inline]
-    pub fn as_slice(&self) -> &[u8] {
+    #[must_use] pub fn as_slice(&self) -> &[u8] {
         &self.0.fields[..self.0.bounds.end()]
     }
 
@@ -603,23 +603,23 @@ impl Default for Position {
 impl Position {
     /// Returns a new position initialized to the start value.
     #[inline]
-    pub fn new() -> Position {
+    #[must_use] pub fn new() -> Position {
         Position { byte: 0, line: 1, record: 0 }
     }
 
     /// The byte offset, starting at `0`, of this position.
     #[inline]
-    pub fn byte(&self) -> u64 {
+    #[must_use] pub fn byte(&self) -> u64 {
         self.byte
     }
     /// The line number, starting at `1`, of this position.
     #[inline]
-    pub fn line(&self) -> u64 {
+    #[must_use] pub fn line(&self) -> u64 {
         self.line
     }
     /// The record index, starting with the first record at `0`.
     #[inline]
-    pub fn record(&self) -> u64 {
+    #[must_use] pub fn record(&self) -> u64 {
         self.record
     }
 
@@ -852,8 +852,7 @@ impl<'r> DoubleEndedIterator for ByteRecordIter<'r> {
             let start = self
                 .i_reverse
                 .checked_sub(1)
-                .map(|i| self.r.0.bounds.ends()[i])
-                .unwrap_or(0);
+                .map_or(0, |i| self.r.0.bounds.ends()[i]);
             let end = self.last_start;
             self.last_start = start;
             Some(&self.r.0.fields[start..end])
