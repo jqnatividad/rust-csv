@@ -719,12 +719,12 @@ impl fmt::Display for DeserializeErrorKind {
 
 impl DeserializeError {
     /// Return the field index (starting at 0) of this error, if available.
-    #[must_use] pub fn field(&self) -> Option<u64> {
+    #[must_use] pub const fn field(&self) -> Option<u64> {
         self.field
     }
 
     /// Return the underlying error kind.
-    #[must_use] pub fn kind(&self) -> &DeserializeErrorKind {
+    #[must_use] pub const fn kind(&self) -> &DeserializeErrorKind {
         &self.kind
     }
 }

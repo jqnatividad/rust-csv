@@ -574,7 +574,7 @@ impl StringRecord {
     /// assert_eq!(&byte_record[2], b"c");
     /// ```
     #[inline]
-    #[must_use] pub fn as_byte_record(&self) -> &ByteRecord {
+    #[must_use] pub const fn as_byte_record(&self) -> &ByteRecord {
         &self.0
     }
 

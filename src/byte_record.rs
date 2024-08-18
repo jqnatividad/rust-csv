@@ -438,7 +438,7 @@ impl ByteRecord {
     /// }
     /// ```
     #[inline]
-    #[must_use] pub fn position(&self) -> Option<&Position> {
+    #[must_use] pub const fn position(&self) -> Option<&Position> {
         self.0.pos.as_ref()
     }
 
@@ -603,23 +603,23 @@ impl Default for Position {
 impl Position {
     /// Returns a new position initialized to the start value.
     #[inline]
-    #[must_use] pub fn new() -> Position {
+    #[must_use] pub const fn new() -> Position {
         Position { byte: 0, line: 1, record: 0 }
     }
 
     /// The byte offset, starting at `0`, of this position.
     #[inline]
-    #[must_use] pub fn byte(&self) -> u64 {
+    #[must_use] pub const fn byte(&self) -> u64 {
         self.byte
     }
     /// The line number, starting at `1`, of this position.
     #[inline]
-    #[must_use] pub fn line(&self) -> u64 {
+    #[must_use] pub const fn line(&self) -> u64 {
         self.line
     }
     /// The record index, starting with the first record at `0`.
     #[inline]
-    #[must_use] pub fn record(&self) -> u64 {
+    #[must_use] pub const fn record(&self) -> u64 {
         self.record
     }
 
@@ -709,7 +709,7 @@ impl Bounds {
 
     /// Returns the number of fields in these bounds.
     #[inline]
-    fn len(&self) -> usize {
+    const fn len(&self) -> usize {
         self.len
     }
 
@@ -875,7 +875,7 @@ fn trim_ascii_start(mut bytes: &[u8]) -> &[u8] {
     bytes
 }
 
-fn trim_ascii_end(mut bytes: &[u8]) -> &[u8] {
+const fn trim_ascii_end(mut bytes: &[u8]) -> &[u8] {
     while let [rest @ .., last] = bytes {
         if last.is_ascii_whitespace() {
             bytes = rest;

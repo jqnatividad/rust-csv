@@ -26,7 +26,7 @@ impl Error {
     }
 
     /// Return the specific type of this error.
-    #[must_use] pub fn kind(&self) -> &ErrorKind {
+    #[must_use] pub const fn kind(&self) -> &ErrorKind {
         &self.0
     }
 
@@ -39,7 +39,7 @@ impl Error {
     ///
     /// If this is true, the underlying `ErrorKind` is guaranteed to be
     /// `ErrorKind::Io`.
-    #[must_use] pub fn is_io_error(&self) -> bool {
+    #[must_use] pub const fn is_io_error(&self) -> bool {
         match *self.0 {
             ErrorKind::Io(_) => true,
             _ => false,
@@ -111,7 +111,7 @@ impl ErrorKind {
     ///
     /// This is a convenience function that permits callers to easily access
     /// the position on an error without doing case analysis on `ErrorKind`.
-    #[must_use] pub fn position(&self) -> Option<&Position> {
+    #[must_use] pub const fn position(&self) -> Option<&Position> {
         match *self {
             ErrorKind::Utf8 { ref pos, .. } => pos.as_ref(),
             ErrorKind::UnequalLengths { ref pos, .. } => pos.as_ref(),
@@ -213,7 +213,7 @@ pub struct FromUtf8Error {
 
 impl FromUtf8Error {
     /// Create a new `FromUtf8Error`.
-    pub(crate) fn new(record: ByteRecord, err: Utf8Error) -> FromUtf8Error {
+    pub(crate) const fn new(record: ByteRecord, err: Utf8Error) -> FromUtf8Error {
         FromUtf8Error { record, err }
     }
 
@@ -223,7 +223,7 @@ impl FromUtf8Error {
     }
 
     /// Access the underlying UTF-8 validation error.
-    #[must_use] pub fn utf8_error(&self) -> &Utf8Error {
+    #[must_use] pub const fn utf8_error(&self) -> &Utf8Error {
         &self.err
     }
 }
@@ -256,17 +256,17 @@ pub struct Utf8Error {
 }
 
 /// Create a new UTF-8 error.
-pub fn new_utf8_error(field: usize, valid_up_to: usize) -> Utf8Error {
+pub const fn new_utf8_error(field: usize, valid_up_to: usize) -> Utf8Error {
     Utf8Error { field, valid_up_to }
 }
 
 impl Utf8Error {
     /// The field index of a byte record in which UTF-8 validation failed.
-    #[must_use] pub fn field(&self) -> usize {
+    #[must_use] pub const fn field(&self) -> usize {
         self.field
     }
     /// The index into the given field up to which valid UTF-8 was verified.
-    #[must_use] pub fn valid_up_to(&self) -> usize {
+    #[must_use] pub const fn valid_up_to(&self) -> usize {
         self.valid_up_to
     }
 }
@@ -300,14 +300,14 @@ impl<W> IntoInnerError<W> {
     ///
     /// (This is a visibility hack. It's public in this module, but not in the
     /// crate.)
-    pub(crate) fn new(wtr: W, err: io::Error) -> IntoInnerError<W> {
+    pub(crate) const fn new(wtr: W, err: io::Error) -> IntoInnerError<W> {
         IntoInnerError { wtr, err }
     }
 
     /// Returns the error which caused the call to `into_inner` to fail.
     ///
     /// This error was returned when attempting to flush the internal buffer.
-    pub fn error(&self) -> &io::Error {
+    pub const fn error(&self) -> &io::Error {
         &self.err
     }
 
