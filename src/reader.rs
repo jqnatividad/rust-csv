@@ -1985,12 +1985,12 @@ impl<'r, R: io::Read, D: DeserializeOwned> DeserializeRecordsIter<'r, R, D> {
 
     /// Return a reference to the underlying CSV reader.
     pub fn reader(&self) -> &Reader<R> {
-        &self.rdr
+        self.rdr
     }
 
     /// Return a mutable reference to the underlying CSV reader.
     pub fn reader_mut(&mut self) -> &mut Reader<R> {
-        &mut self.rdr
+        self.rdr
     }
 }
 
@@ -2063,12 +2063,12 @@ impl<'r, R: io::Read> StringRecordsIter<'r, R> {
 
     /// Return a reference to the underlying CSV reader.
     pub fn reader(&self) -> &Reader<R> {
-        &self.rdr
+        self.rdr
     }
 
     /// Return a mutable reference to the underlying CSV reader.
     pub fn reader_mut(&mut self) -> &mut Reader<R> {
-        &mut self.rdr
+        self.rdr
     }
 }
 
@@ -2139,12 +2139,12 @@ impl<'r, R: io::Read> ByteRecordsIter<'r, R> {
 
     /// Return a reference to the underlying CSV reader.
     pub fn reader(&self) -> &Reader<R> {
-        &self.rdr
+        self.rdr
     }
 
     /// Return a mutable reference to the underlying CSV reader.
     pub fn reader_mut(&mut self) -> &mut Reader<R> {
-        &mut self.rdr
+        self.rdr
     }
 }
 

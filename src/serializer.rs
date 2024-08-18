@@ -124,7 +124,7 @@ impl<'a, 'w, W: io::Write> Serializer for &'a mut SeRecord<'w, W> {
     }
 
     fn serialize_none(self) -> Result<Self::Ok, Self::Error> {
-        self.wtr.write_field(&[])
+        self.wtr.write_field([])
     }
 
     fn serialize_some<T: ?Sized + Serialize>(

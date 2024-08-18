@@ -167,6 +167,7 @@ mod writer;
 
 /// The quoting style to use when writing CSV data.
 #[derive(Clone, Copy, Debug)]
+#[derive(Default)]
 pub enum QuoteStyle {
     /// This puts quotes around every field. Always.
     Always,
@@ -177,6 +178,7 @@ pub enum QuoteStyle {
     /// (which is indistinguishable from a record with one empty field).
     ///
     /// This is the default.
+    #[default]
     Necessary,
     /// This puts quotes around all fields that are non-numeric. Namely, when
     /// writing a field that does not parse as a valid float or integer, then
@@ -205,19 +207,16 @@ impl QuoteStyle {
     }
 }
 
-impl Default for QuoteStyle {
-    fn default() -> QuoteStyle {
-        QuoteStyle::Necessary
-    }
-}
 
 /// A record terminator.
 ///
 /// Use this to specify the record terminator while parsing CSV. The default is
 /// CRLF, which treats `\r`, `\n` or `\r\n` as a single record terminator.
 #[derive(Clone, Copy, Debug)]
+#[derive(Default)]
 pub enum Terminator {
     /// Parses `\r`, `\n` or `\r\n` as a single record terminator.
+    #[default]
     CRLF,
     /// Parses the byte given as a record terminator.
     Any(u8),
@@ -241,16 +240,13 @@ impl Terminator {
     }
 }
 
-impl Default for Terminator {
-    fn default() -> Terminator {
-        Terminator::CRLF
-    }
-}
 
 /// The whitespace preservation behaviour when reading CSV data.
 #[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Default)]
 pub enum Trim {
     /// Preserves fields and headers. This is the default.
+    #[default]
     None,
     /// Trim whitespace from headers.
     Headers,
@@ -277,11 +273,6 @@ impl Trim {
     }
 }
 
-impl Default for Trim {
-    fn default() -> Trim {
-        Trim::None
-    }
-}
 
 /// A custom Serde deserializer for possibly invalid `Option<T>` fields.
 ///
