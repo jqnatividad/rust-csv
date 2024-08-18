@@ -392,7 +392,7 @@ impl Writer {
             self.state.quoting = false;
         }
         let (res, o) = match self.term {
-            Terminator::CRLF => write_pessimistic(&[b'\r', b'\n'], output),
+            Terminator::CRLF => write_pessimistic(b"\r\n", output),
             Terminator::Any(b) => write_pessimistic(&[b], output),
             _ => unreachable!(),
         };
