@@ -349,7 +349,7 @@ impl StringRecord {
     /// assert!(StringRecord::new().is_empty());
     /// ```
     #[inline]
-    #[must_use] pub fn is_empty(&self) -> bool {
+    #[must_use] pub const fn is_empty(&self) -> bool {
         self.len() == 0
     }
 
@@ -364,7 +364,7 @@ impl StringRecord {
     /// assert_eq!(record.len(), 3);
     /// ```
     #[inline]
-    #[must_use] pub fn len(&self) -> usize {
+    #[must_use] pub const fn len(&self) -> usize {
         self.0.len()
     }
 
@@ -493,7 +493,7 @@ impl StringRecord {
     /// }
     /// ```
     #[inline]
-    #[must_use] pub fn position(&self) -> Option<&Position> {
+    #[must_use] pub const fn position(&self) -> Option<&Position> {
         self.0.position()
     }
 

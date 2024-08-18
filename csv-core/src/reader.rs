@@ -454,7 +454,7 @@ const NFA_STATES: &'static [NfaState] = &[
 
 impl NfaState {
     /// Returns true if this state indicates that a field has been parsed.
-    fn is_field_final(&self) -> bool {
+    const fn is_field_final(&self) -> bool {
         match *self {
             NfaState::End
             | NfaState::EndRecord
@@ -465,7 +465,7 @@ impl NfaState {
     }
 
     /// Returns true if this state indicates that a record has been parsed.
-    fn is_record_final(&self) -> bool {
+    const fn is_record_final(&self) -> bool {
         match *self {
             NfaState::End | NfaState::EndRecord | NfaState::CRLF => true,
             _ => false,
@@ -493,7 +493,7 @@ impl Reader {
     /// of `\n`.
     ///
     /// Line numbers starts at `1` and are reset when `reset` is called.
-    pub fn line(&self) -> u64 {
+    pub const fn line(&self) -> u64 {
         self.line
     }
 
@@ -965,7 +965,7 @@ impl Reader {
     /// Compute the final NFA transition after all caller-provided input has
     /// been exhausted.
     #[inline(always)]
-    fn transition_final_nfa(&self, state: NfaState) -> NfaState {
+    const fn transition_final_nfa(&self, state: NfaState) -> NfaState {
         use self::NfaState::*;
         match state {
             End | StartRecord | EndRecord | InComment | CRLF => End,
@@ -1154,7 +1154,7 @@ impl Dfa {
         self.new_state(NfaState::EndRecord)
     }
 
-    fn get_output(&self, state: DfaState, c: u8) -> (DfaState, bool) {
+    const fn get_output(&self, state: DfaState, c: u8) -> (DfaState, bool) {
         let cls = self.classes.classes[c as usize];
         let idx = state.0 as usize + cls as usize;
         (self.trans[idx], self.has_output[idx])
@@ -1229,7 +1229,7 @@ struct DfaClasses {
 }
 
 impl DfaClasses {
-    fn new() -> DfaClasses {
+    const fn new() -> DfaClasses {
         DfaClasses { classes: [0; CLASS_SIZE], next_class: 1 }
     }
 
@@ -1241,7 +1241,7 @@ impl DfaClasses {
         self.next_class += 1;
     }
 
-    fn num_classes(&self) -> usize {
+    const fn num_classes(&self) -> usize {
         self.next_class
     }
 
@@ -1284,11 +1284,11 @@ impl DfaClasses {
 struct DfaState(u8);
 
 impl DfaState {
-    fn start() -> DfaState {
+    const fn start() -> DfaState {
         DfaState(0)
     }
 
-    fn is_start(&self) -> bool {
+    const fn is_start(&self) -> bool {
         self.0 == 0
     }
 }

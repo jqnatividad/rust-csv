@@ -283,7 +283,7 @@ impl ByteRecord {
     /// assert!(ByteRecord::new().is_empty());
     /// ```
     #[inline]
-    #[must_use] pub fn is_empty(&self) -> bool {
+    #[must_use] pub const fn is_empty(&self) -> bool {
         self.len() == 0
     }
 
@@ -298,7 +298,7 @@ impl ByteRecord {
     /// assert_eq!(record.len(), 3);
     /// ```
     #[inline]
-    #[must_use] pub fn len(&self) -> usize {
+    #[must_use] pub const fn len(&self) -> usize {
         self.0.bounds.len()
     }
 
@@ -860,11 +860,11 @@ impl<'r> DoubleEndedIterator for ByteRecordIter<'r> {
     }
 }
 
-fn trim_ascii(bytes: &[u8]) -> &[u8] {
+const fn trim_ascii(bytes: &[u8]) -> &[u8] {
     trim_ascii_start(trim_ascii_end(bytes))
 }
 
-fn trim_ascii_start(mut bytes: &[u8]) -> &[u8] {
+const fn trim_ascii_start(mut bytes: &[u8]) -> &[u8] {
     while let [first, rest @ ..] = bytes {
         if first.is_ascii_whitespace() {
             bytes = rest;
