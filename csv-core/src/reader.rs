@@ -723,25 +723,32 @@ impl Reader {
         }
         let (mut nin, mut nout) = (0, 0);
         let mut state = self.dfa_state;
-        while nin < input.len() && nout < output.len() {
-            let b = input[nin];
+        let input_len = input.len();
+        let output_len = output.len();
+        let final_field = self.dfa.final_field;
+    
+        while nin < input_len && nout < output_len {
+            let b = unsafe { *input.get_unchecked(nin) };
             self.line += (b == b'\n') as u64;
             let (s, has_out) = self.dfa.get_output(state, b);
             state = s;
             if has_out {
-                output[nout] = b;
+                unsafe {
+                    *output.get_unchecked_mut(nout) = b;
+                }
                 nout += 1;
             }
             nin += 1;
-            if state >= self.dfa.final_field {
+            if state >= final_field {
                 break;
             }
         }
+    
         let res = self.dfa.new_read_field_result(
             state,
             false,
-            nin >= input.len(),
-            nout >= output.len(),
+            nin >= input_len,
+            nout >= output_len,
         );
         self.dfa_state = state;
         (res, nin, nout)
