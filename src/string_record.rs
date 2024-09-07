@@ -105,7 +105,8 @@ impl StringRecord {
     /// assert_eq!(record.len(), 3);
     /// ```
     #[inline]
-    #[must_use] pub fn new() -> StringRecord {
+    #[must_use]
+    pub fn new() -> StringRecord {
         StringRecord(ByteRecord::new())
     }
 
@@ -115,7 +116,8 @@ impl StringRecord {
     /// actual row contents. `fields` refers to the number of fields one
     /// might expect to store.
     #[inline]
-    #[must_use] pub fn with_capacity(buffer: usize, fields: usize) -> StringRecord {
+    #[must_use]
+    pub fn with_capacity(buffer: usize, fields: usize) -> StringRecord {
         StringRecord(ByteRecord::with_capacity(buffer, fields))
     }
 
@@ -150,6 +152,7 @@ impl StringRecord {
     /// ]);
     /// let err = StringRecord::from_byte_record(byte_record).unwrap_err();
     /// assert_eq!(err.utf8_error().field(), 1);
+    /// #[cfg(feature = "compat_simd")]
     /// assert_eq!(err.utf8_error().valid_up_to(), 3);
     /// ```
     #[inline]
@@ -192,7 +195,8 @@ impl StringRecord {
     /// assert_eq!(&str_record[2], "c");
     /// ```
     #[inline]
-    #[must_use] pub fn from_byte_record_lossy(record: ByteRecord) -> StringRecord {
+    #[must_use]
+    pub fn from_byte_record_lossy(record: ByteRecord) -> StringRecord {
         // If the record is valid UTF-8, then take the easy path.
         if let Ok(()) = record.validate() {
             return StringRecord(record);
@@ -311,7 +315,8 @@ impl StringRecord {
     /// }
     /// ```
     #[inline]
-    #[must_use] pub fn iter(&self) -> StringRecordIter {
+    #[must_use]
+    pub fn iter(&self) -> StringRecordIter {
         self.into_iter()
     }
 
@@ -329,7 +334,8 @@ impl StringRecord {
     /// assert_eq!(record.get(3), None);
     /// ```
     #[inline]
-    #[must_use] pub fn get(&self, i: usize) -> Option<&str> {
+    #[must_use]
+    pub fn get(&self, i: usize) -> Option<&str> {
         self.0.get(i).map(|bytes| {
             debug_assert!(str::from_utf8(bytes).is_ok());
             // This is safe because we guarantee that all string records
@@ -349,7 +355,8 @@ impl StringRecord {
     /// assert!(StringRecord::new().is_empty());
     /// ```
     #[inline]
-    #[must_use] pub const fn is_empty(&self) -> bool {
+    #[must_use]
+    pub const fn is_empty(&self) -> bool {
         self.len() == 0
     }
 
@@ -364,7 +371,8 @@ impl StringRecord {
     /// assert_eq!(record.len(), 3);
     /// ```
     #[inline]
-    #[must_use] pub const fn len(&self) -> usize {
+    #[must_use]
+    pub const fn len(&self) -> usize {
         self.0.len()
     }
 
@@ -493,7 +501,8 @@ impl StringRecord {
     /// }
     /// ```
     #[inline]
-    #[must_use] pub const fn position(&self) -> Option<&Position> {
+    #[must_use]
+    pub const fn position(&self) -> Option<&Position> {
         self.0.position()
     }
 
@@ -536,7 +545,8 @@ impl StringRecord {
     /// assert_eq!(&record.as_slice()[range], "quux");
     /// ```
     #[inline]
-    #[must_use] pub fn range(&self, i: usize) -> Option<Range<usize>> {
+    #[must_use]
+    pub fn range(&self, i: usize) -> Option<Range<usize>> {
         self.0.range(i)
     }
 
@@ -553,7 +563,8 @@ impl StringRecord {
     /// assert_eq!(record.as_slice(), "fooquuxz");
     /// ```
     #[inline]
-    #[must_use] pub fn as_slice(&self) -> &str {
+    #[must_use]
+    pub fn as_slice(&self) -> &str {
         debug_assert!(str::from_utf8(self.0.as_slice()).is_ok());
         // This is safe because we guarantee that each field is valid UTF-8.
         // If each field is valid UTF-8, then the entire buffer (up to the end
@@ -574,7 +585,8 @@ impl StringRecord {
     /// assert_eq!(&byte_record[2], b"c");
     /// ```
     #[inline]
-    #[must_use] pub const fn as_byte_record(&self) -> &ByteRecord {
+    #[must_use]
+    pub const fn as_byte_record(&self) -> &ByteRecord {
         &self.0
     }
 
@@ -606,7 +618,8 @@ impl StringRecord {
     /// assert_eq!(byte_record.len(), 3);
     /// ```
     #[inline]
-    #[must_use] pub fn into_byte_record(self) -> ByteRecord {
+    #[must_use]
+    pub fn into_byte_record(self) -> ByteRecord {
         self.0
     }
 
