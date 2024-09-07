@@ -80,7 +80,8 @@ impl ReaderBuilder {
     ///     Ok(())
     /// }
     /// ```
-    #[must_use] pub fn new() -> ReaderBuilder {
+    #[must_use]
+    pub fn new() -> ReaderBuilder {
         ReaderBuilder::default()
     }
 
@@ -1619,7 +1620,9 @@ impl<R: io::Read> Reader<R> {
         &mut self,
         record: &mut ByteRecord,
     ) -> Result<bool> {
-        use csv_core::ReadRecordResult::{End, InputEmpty, OutputEndsFull, OutputFull, Record};
+        use csv_core::ReadRecordResult::{
+            End, InputEmpty, OutputEndsFull, OutputFull, Record,
+        };
 
         record.clear();
         record.set_position(Some(self.state.cur_pos.clone()));
@@ -1984,7 +1987,8 @@ impl<'r, R: io::Read, D: DeserializeOwned> DeserializeRecordsIter<'r, R, D> {
     }
 
     /// Return a reference to the underlying CSV reader.
-    #[must_use] pub fn reader(&self) -> &Reader<R> {
+    #[must_use]
+    pub fn reader(&self) -> &Reader<R> {
         self.rdr
     }
 
@@ -2062,7 +2066,8 @@ impl<'r, R: io::Read> StringRecordsIter<'r, R> {
     }
 
     /// Return a reference to the underlying CSV reader.
-    #[must_use] pub fn reader(&self) -> &Reader<R> {
+    #[must_use]
+    pub fn reader(&self) -> &Reader<R> {
         self.rdr
     }
 
@@ -2138,7 +2143,8 @@ impl<'r, R: io::Read> ByteRecordsIter<'r, R> {
     }
 
     /// Return a reference to the underlying CSV reader.
-    #[must_use] pub fn reader(&self) -> &Reader<R> {
+    #[must_use]
+    pub fn reader(&self) -> &Reader<R> {
         self.rdr
     }
 
@@ -2275,6 +2281,7 @@ mod tests {
             ErrorKind::Utf8 { pos: Some(ref pos), ref err } => {
                 assert_eq!(pos, &newpos(0, 1, 0));
                 assert_eq!(err.field(), 1);
+                #[cfg(feature = "compat_simd")]
                 assert_eq!(err.valid_up_to(), 3);
             }
             ref err => panic!("match failed, got {:?}", err),
@@ -2444,6 +2451,7 @@ mod tests {
             ErrorKind::Utf8 { pos: Some(ref pos), ref err } => {
                 assert_eq!(pos, &newpos(0, 1, 0));
                 assert_eq!(err.field(), 1);
+                #[cfg(feature = "compat_simd")]
                 assert_eq!(err.valid_up_to(), 1);
             }
             ref err => panic!("match failed, got {:?}", err),
