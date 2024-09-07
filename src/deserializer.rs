@@ -701,7 +701,10 @@ impl fmt::Display for DeserializeError {
 
 impl fmt::Display for DeserializeErrorKind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use self::DeserializeErrorKind::{InvalidUtf8, Message, ParseBool, ParseFloat, ParseInt, UnexpectedEndOfRow, Unsupported};
+        use self::DeserializeErrorKind::{
+            InvalidUtf8, Message, ParseBool, ParseFloat, ParseInt,
+            UnexpectedEndOfRow, Unsupported,
+        };
 
         match *self {
             Message(ref msg) => write!(f, "{msg}"),
@@ -719,12 +722,14 @@ impl fmt::Display for DeserializeErrorKind {
 
 impl DeserializeError {
     /// Return the field index (starting at 0) of this error, if available.
-    #[must_use] pub const fn field(&self) -> Option<u64> {
+    #[must_use]
+    pub const fn field(&self) -> Option<u64> {
         self.field
     }
 
     /// Return the underlying error kind.
-    #[must_use] pub const fn kind(&self) -> &DeserializeErrorKind {
+    #[must_use]
+    pub const fn kind(&self) -> &DeserializeErrorKind {
         &self.kind
     }
 }
@@ -732,7 +737,10 @@ impl DeserializeError {
 impl DeserializeErrorKind {
     #[allow(deprecated)]
     fn description(&self) -> &str {
-        use self::DeserializeErrorKind::{InvalidUtf8, Message, ParseBool, ParseFloat, ParseInt, UnexpectedEndOfRow, Unsupported};
+        use self::DeserializeErrorKind::{
+            InvalidUtf8, Message, ParseBool, ParseFloat, ParseInt,
+            UnexpectedEndOfRow, Unsupported,
+        };
 
         match *self {
             Message(_) => "deserialization error",

@@ -62,7 +62,8 @@ impl WriterBuilder {
     ///     Ok(())
     /// }
     /// ```
-    #[must_use] pub fn new() -> WriterBuilder {
+    #[must_use]
+    pub fn new() -> WriterBuilder {
         WriterBuilder::default()
     }
 

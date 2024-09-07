@@ -726,7 +726,7 @@ impl Reader {
         let input_len = input.len();
         let output_len = output.len();
         let final_field = self.dfa.final_field;
-    
+
         while nin < input_len && nout < output_len {
             let b = unsafe { *input.get_unchecked(nin) };
             self.line += (b == b'\n') as u64;
@@ -743,7 +743,7 @@ impl Reader {
                 break;
             }
         }
-    
+
         let res = self.dfa.new_read_field_result(
             state,
             false,

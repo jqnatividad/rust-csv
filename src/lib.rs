@@ -166,8 +166,7 @@ pub mod tutorial;
 mod writer;
 
 /// The quoting style to use when writing CSV data.
-#[derive(Clone, Copy, Debug)]
-#[derive(Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub enum QuoteStyle {
     /// This puts quotes around every field. Always.
     Always,
@@ -207,13 +206,11 @@ impl QuoteStyle {
     }
 }
 
-
 /// A record terminator.
 ///
 /// Use this to specify the record terminator while parsing CSV. The default is
 /// CRLF, which treats `\r`, `\n` or `\r\n` as a single record terminator.
-#[derive(Clone, Copy, Debug)]
-#[derive(Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub enum Terminator {
     /// Parses `\r`, `\n` or `\r\n` as a single record terminator.
     #[default]
@@ -240,10 +237,8 @@ impl Terminator {
     }
 }
 
-
 /// The whitespace preservation behaviour when reading CSV data.
-#[derive(Clone, Copy, Debug, PartialEq)]
-#[derive(Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub enum Trim {
     /// Preserves fields and headers. This is the default.
     #[default]
@@ -272,7 +267,6 @@ impl Trim {
         self == &Trim::Headers || self == &Trim::All
     }
 }
-
 
 /// A custom Serde deserializer for possibly invalid `Option<T>` fields.
 ///

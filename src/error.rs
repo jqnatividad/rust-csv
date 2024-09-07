@@ -26,12 +26,14 @@ impl Error {
     }
 
     /// Return the specific type of this error.
-    #[must_use] pub const fn kind(&self) -> &ErrorKind {
+    #[must_use]
+    pub const fn kind(&self) -> &ErrorKind {
         &self.0
     }
 
     /// Unwrap this error into its underlying type.
-    #[must_use] pub fn into_kind(self) -> ErrorKind {
+    #[must_use]
+    pub fn into_kind(self) -> ErrorKind {
         *self.0
     }
 
@@ -39,7 +41,8 @@ impl Error {
     ///
     /// If this is true, the underlying `ErrorKind` is guaranteed to be
     /// `ErrorKind::Io`.
-    #[must_use] pub const fn is_io_error(&self) -> bool {
+    #[must_use]
+    pub const fn is_io_error(&self) -> bool {
         match *self.0 {
             ErrorKind::Io(_) => true,
             _ => false,
@@ -50,7 +53,8 @@ impl Error {
     ///
     /// This is a convenience function that permits callers to easily access
     /// the position on an error without doing case analysis on `ErrorKind`.
-    #[must_use] pub const fn position(&self) -> Option<&Position> {
+    #[must_use]
+    pub const fn position(&self) -> Option<&Position> {
         self.0.position()
     }
 }
@@ -111,7 +115,8 @@ impl ErrorKind {
     ///
     /// This is a convenience function that permits callers to easily access
     /// the position on an error without doing case analysis on `ErrorKind`.
-    #[must_use] pub const fn position(&self) -> Option<&Position> {
+    #[must_use]
+    pub const fn position(&self) -> Option<&Position> {
         match *self {
             ErrorKind::Utf8 { ref pos, .. } => pos.as_ref(),
             ErrorKind::UnequalLengths { ref pos, .. } => pos.as_ref(),
@@ -213,17 +218,22 @@ pub struct FromUtf8Error {
 
 impl FromUtf8Error {
     /// Create a new `FromUtf8Error`.
-    pub(crate) const fn new(record: ByteRecord, err: Utf8Error) -> FromUtf8Error {
+    pub(crate) const fn new(
+        record: ByteRecord,
+        err: Utf8Error,
+    ) -> FromUtf8Error {
         FromUtf8Error { record, err }
     }
 
     /// Access the underlying `ByteRecord` that failed UTF-8 validation.
-    #[must_use] pub fn into_byte_record(self) -> ByteRecord {
+    #[must_use]
+    pub fn into_byte_record(self) -> ByteRecord {
         self.record
     }
 
     /// Access the underlying UTF-8 validation error.
-    #[must_use] pub const fn utf8_error(&self) -> &Utf8Error {
+    #[must_use]
+    pub const fn utf8_error(&self) -> &Utf8Error {
         &self.err
     }
 }
@@ -262,11 +272,13 @@ pub const fn new_utf8_error(field: usize, valid_up_to: usize) -> Utf8Error {
 
 impl Utf8Error {
     /// The field index of a byte record in which UTF-8 validation failed.
-    #[must_use] pub const fn field(&self) -> usize {
+    #[must_use]
+    pub const fn field(&self) -> usize {
         self.field
     }
     /// The index into the given field up to which valid UTF-8 was verified.
-    #[must_use] pub const fn valid_up_to(&self) -> usize {
+    #[must_use]
+    pub const fn valid_up_to(&self) -> usize {
         self.valid_up_to
     }
 }
