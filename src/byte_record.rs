@@ -126,7 +126,8 @@ impl ByteRecord {
     /// assert_eq!(record.len(), 3);
     /// ```
     #[inline]
-    #[must_use] pub fn new() -> ByteRecord {
+    #[must_use]
+    pub fn new() -> ByteRecord {
         ByteRecord::with_capacity(0, 0)
     }
 
@@ -136,7 +137,8 @@ impl ByteRecord {
     /// actual row contents. `fields` refers to the number of fields one
     /// might expect to store.
     #[inline]
-    #[must_use] pub fn with_capacity(buffer: usize, fields: usize) -> ByteRecord {
+    #[must_use]
+    pub fn with_capacity(buffer: usize, fields: usize) -> ByteRecord {
         ByteRecord(Box::new(ByteRecordInner {
             pos: None,
             fields: vec![0; buffer],
@@ -251,7 +253,8 @@ impl ByteRecord {
     /// }
     /// ```
     #[inline]
-    #[must_use] pub fn iter(&self) -> ByteRecordIter {
+    #[must_use]
+    pub fn iter(&self) -> ByteRecordIter {
         self.into_iter()
     }
 
@@ -269,7 +272,8 @@ impl ByteRecord {
     /// assert_eq!(record.get(3), None);
     /// ```
     #[inline]
-    #[must_use] pub fn get(&self, i: usize) -> Option<&[u8]> {
+    #[must_use]
+    pub fn get(&self, i: usize) -> Option<&[u8]> {
         self.0.bounds.get(i).map(|range| &self.0.fields[range])
     }
 
@@ -283,7 +287,8 @@ impl ByteRecord {
     /// assert!(ByteRecord::new().is_empty());
     /// ```
     #[inline]
-    #[must_use] pub const fn is_empty(&self) -> bool {
+    #[must_use]
+    pub const fn is_empty(&self) -> bool {
         self.len() == 0
     }
 
@@ -298,7 +303,8 @@ impl ByteRecord {
     /// assert_eq!(record.len(), 3);
     /// ```
     #[inline]
-    #[must_use] pub const fn len(&self) -> usize {
+    #[must_use]
+    pub const fn len(&self) -> usize {
         self.0.bounds.len()
     }
 
@@ -438,7 +444,8 @@ impl ByteRecord {
     /// }
     /// ```
     #[inline]
-    #[must_use] pub const fn position(&self) -> Option<&Position> {
+    #[must_use]
+    pub const fn position(&self) -> Option<&Position> {
         self.0.pos.as_ref()
     }
 
@@ -479,7 +486,8 @@ impl ByteRecord {
     /// assert_eq!(&record.as_slice()[range], &b"quux"[..]);
     /// ```
     #[inline]
-    #[must_use] pub fn range(&self, i: usize) -> Option<Range<usize>> {
+    #[must_use]
+    pub fn range(&self, i: usize) -> Option<Range<usize>> {
         self.0.bounds.get(i)
     }
 
@@ -496,7 +504,8 @@ impl ByteRecord {
     /// assert_eq!(record.as_slice(), &b"fooquuxz"[..]);
     /// ```
     #[inline]
-    #[must_use] pub fn as_slice(&self) -> &[u8] {
+    #[must_use]
+    pub fn as_slice(&self) -> &[u8] {
         &self.0.fields[..self.0.bounds.end()]
     }
 
@@ -539,19 +548,43 @@ impl ByteRecord {
     }
 
     /// Validate the given record as UTF-8.
-    ///
+    /// using simdutf8 compat flavor, which is a drop-in replacement for std::str::from_utf8
     /// If it's not UTF-8, return an error.
     #[inline]
+    #[cfg(feature = "compat_simd")]
     pub(crate) fn validate(&self) -> result::Result<(), Utf8Error> {
         // If the entire buffer is ASCII, then we have nothing to fear.
         if self.0.fields[..self.0.bounds.end()].is_ascii() {
             return Ok(());
         }
         // Otherwise, we must check each field individually to ensure that
-        // it's valid UTF-8.
+        // it's valid UTF-8 using simdutf8.
         for (i, field) in self.iter().enumerate() {
-            if let Err(err) = std::str::from_utf8(field) {
+            if let Err(err) = simdutf8::compat::from_utf8(field) {
                 return Err(new_utf8_error(i, err.valid_up_to()));
+            }
+        }
+        Ok(())
+    }
+
+    /// Validate the given record as UTF-8.
+    /// using simdutf8 basic flavor, which is faster than the compat flavor
+    /// but does not return detailed error information
+    /// If it's not UTF-8, return an error.
+    #[inline]
+    #[cfg(not(feature = "compat_simd"))]
+    pub(crate) fn validate(&self) -> result::Result<(), Utf8Error> {
+        // If the entire buffer is ASCII, then we have nothing to fear.
+        if self.0.fields[..self.0.bounds.end()].is_ascii() {
+            return Ok(());
+        }
+        // Otherwise, we must check each field individually to ensure that
+        // it's valid UTF-8. Here we use the basic flavor, which is faster than
+        // the compat flavor but does not return detailed error information.
+        // so we return 0 for the valid_up_to index
+        for (i, field) in self.iter().enumerate() {
+            if let Err(_) = simdutf8::basic::from_utf8(field) {
+                return Err(new_utf8_error(i, 0));
             }
         }
         Ok(())
@@ -603,23 +636,27 @@ impl Default for Position {
 impl Position {
     /// Returns a new position initialized to the start value.
     #[inline]
-    #[must_use] pub const fn new() -> Position {
+    #[must_use]
+    pub const fn new() -> Position {
         Position { byte: 0, line: 1, record: 0 }
     }
 
     /// The byte offset, starting at `0`, of this position.
     #[inline]
-    #[must_use] pub const fn byte(&self) -> u64 {
+    #[must_use]
+    pub const fn byte(&self) -> u64 {
         self.byte
     }
     /// The line number, starting at `1`, of this position.
     #[inline]
-    #[must_use] pub const fn line(&self) -> u64 {
+    #[must_use]
+    pub const fn line(&self) -> u64 {
         self.line
     }
     /// The record index, starting with the first record at `0`.
     #[inline]
-    #[must_use] pub const fn record(&self) -> u64 {
+    #[must_use]
+    pub const fn record(&self) -> u64 {
         self.record
     }
 
@@ -1058,6 +1095,7 @@ mod tests {
 
         let err = StringRecord::from_byte_record(rec).unwrap_err();
         assert_eq!(err.utf8_error().field(), 1);
+        #[cfg(feature = "compat_simd")]
         assert_eq!(err.utf8_error().valid_up_to(), 1);
     }
 
@@ -1068,6 +1106,7 @@ mod tests {
 
         let err = StringRecord::from_byte_record(rec).unwrap_err();
         assert_eq!(err.utf8_error().field(), 0);
+        #[cfg(feature = "compat_simd")]
         assert_eq!(err.utf8_error().valid_up_to(), 0);
     }
 
@@ -1078,6 +1117,7 @@ mod tests {
 
         let err = StringRecord::from_byte_record(rec).unwrap_err();
         assert_eq!(err.utf8_error().field(), 0);
+        #[cfg(feature = "compat_simd")]
         assert_eq!(err.utf8_error().valid_up_to(), 1);
     }
 
@@ -1092,6 +1132,7 @@ mod tests {
 
         let err = StringRecord::from_byte_record(rec).unwrap_err();
         assert_eq!(err.utf8_error().field(), 4);
+        #[cfg(feature = "compat_simd")]
         assert_eq!(err.utf8_error().valid_up_to(), 3);
     }
 
@@ -1106,6 +1147,7 @@ mod tests {
 
         let err = StringRecord::from_byte_record(rec).unwrap_err();
         assert_eq!(err.utf8_error().field(), 4);
+        #[cfg(feature = "compat_simd")]
         assert_eq!(err.utf8_error().valid_up_to(), 0);
     }
 
@@ -1119,6 +1161,7 @@ mod tests {
 
         let err = StringRecord::from_byte_record(rec).unwrap_err();
         assert_eq!(err.utf8_error().field(), 0);
+        #[cfg(feature = "compat_simd")]
         assert_eq!(err.utf8_error().valid_up_to(), 1);
     }
 
