@@ -583,7 +583,7 @@ impl ByteRecord {
         // the compat flavor but does not return detailed error information.
         // so we return 0 for the valid_up_to index
         for (i, field) in self.iter().enumerate() {
-            if let Err(_) = simdutf8::basic::from_utf8(field) {
+            if simdutf8::basic::from_utf8(field).is_err() {
                 return Err(new_utf8_error(i, 0));
             }
         }
