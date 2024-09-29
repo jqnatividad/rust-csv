@@ -1239,9 +1239,7 @@ impl DfaClasses {
     }
 
     fn add(&mut self, b: u8) {
-        if self.next_class > CLASS_SIZE {
-            panic!("added too many classes")
-        }
+        assert!(self.next_class <= CLASS_SIZE, "added too many classes");
         self.classes[b as usize] = self.next_class as u8;
         self.next_class += 1;
     }
