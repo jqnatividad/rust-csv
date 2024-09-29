@@ -201,11 +201,16 @@ impl StringRecord {
         if let Ok(()) = record.validate() {
             return StringRecord(record);
         }
-        // TODO: We can be faster here. Not sure if it's worth it.
         let mut str_record =
             StringRecord::with_capacity(record.as_slice().len(), record.len());
+        let mut str_field = String::new();
         for field in &record {
-            str_record.push_field(&String::from_utf8_lossy(field));
+            str_record.push_field(
+                simdutf8::basic::from_utf8(field).unwrap_or_else(|_| {
+                    str_field = String::from_utf8_lossy(field).to_string();
+                    &str_field
+                }),
+            );
         }
         str_record
     }
