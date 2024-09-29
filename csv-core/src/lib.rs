@@ -156,6 +156,7 @@ impl Default for Terminator {
 
 /// The quoting style to use when writing CSV data.
 #[derive(Clone, Copy, Debug)]
+#[non_exhaustive]
 pub enum QuoteStyle {
     /// This puts quotes around every field. Always.
     Always,
@@ -173,13 +174,6 @@ pub enum QuoteStyle {
     NonNumeric,
     /// This *never* writes quotes, even if it would produce invalid CSV data.
     Never,
-    /// Hints that destructuring should not be exhaustive.
-    ///
-    /// This enum may grow additional variants, so this makes sure clients
-    /// don't count on exhaustive matching. (Otherwise, adding a new variant
-    /// could break existing code.)
-    #[doc(hidden)]
-    __Nonexhaustive,
 }
 
 impl Default for QuoteStyle {

@@ -444,7 +444,6 @@ impl Writer {
             QuoteStyle::Never => false,
             QuoteStyle::NonNumeric => is_non_numeric(input),
             QuoteStyle::Necessary => self.needs_quotes(input),
-            _ => unreachable!(),
         }
     }
 
