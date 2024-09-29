@@ -115,18 +115,12 @@ mod writer;
 /// Use this to specify the record terminator while parsing CSV. The default is
 /// CRLF, which treats `\r`, `\n` or `\r\n` as a single record terminator.
 #[derive(Clone, Copy, Debug)]
+#[non_exhaustive]
 pub enum Terminator {
     /// Parses `\r`, `\n` or `\r\n` as a single record terminator.
     CRLF,
     /// Parses the byte given as a record terminator.
     Any(u8),
-    /// Hints that destructuring should not be exhaustive.
-    ///
-    /// This enum may grow additional variants, so this makes sure clients
-    /// don't count on exhaustive matching. (Otherwise, adding a new variant
-    /// could break existing code.)
-    #[doc(hidden)]
-    __Nonexhaustive,
 }
 
 impl Terminator {
