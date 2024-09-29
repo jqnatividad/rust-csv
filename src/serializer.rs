@@ -1,15 +1,12 @@
 use std::{fmt, io, mem};
 
-use {
-    itoa, ryu,
-    serde::{
-        ser::{
-            Error as SerdeError, Serialize, SerializeMap, SerializeSeq,
-            SerializeStruct, SerializeStructVariant, SerializeTuple,
-            SerializeTupleStruct, SerializeTupleVariant, Serializer,
-        },
-        serde_if_integer128,
+use serde::{
+    ser::{
+        Error as SerdeError, Serialize, SerializeMap, SerializeSeq,
+        SerializeStruct, SerializeStructVariant, SerializeTuple,
+        SerializeTupleStruct, SerializeTupleVariant, Serializer,
     },
+    serde_if_integer128,
 };
 
 use crate::{
