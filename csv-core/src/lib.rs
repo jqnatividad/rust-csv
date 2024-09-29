@@ -129,7 +129,6 @@ impl Terminator {
         match *self {
             Terminator::CRLF => true,
             Terminator::Any(_) => false,
-            _ => unreachable!(),
         }
     }
 
@@ -137,7 +136,6 @@ impl Terminator {
         match *self {
             Terminator::CRLF => other == b'\r' || other == b'\n',
             Terminator::Any(b) => other == b,
-            _ => unreachable!(),
         }
     }
 }
