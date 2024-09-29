@@ -990,10 +990,7 @@ impl<W: io::Write> Writer<W> {
             }
             first = false;
 
-            if !self.core.should_quote(field) {
-                self.buf.writable()[..field.len()].copy_from_slice(field);
-                self.buf.written(field.len());
-            } else {
+            if self.core.should_quote(field) {
                 self.buf.writable()[0] = self.core.get_quote();
                 self.buf.written(1);
                 let (res, nin, nout) = csv_core::quote(
@@ -1008,6 +1005,9 @@ impl<W: io::Write> Writer<W> {
                 self.buf.written(nout);
                 self.buf.writable()[0] = self.core.get_quote();
                 self.buf.written(1);
+            } else {
+                self.buf.writable()[..field.len()].copy_from_slice(field);
+                self.buf.written(field.len());
             }
         }
         self.state.fields_written = record.len() as u64;
